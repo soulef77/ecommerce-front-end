@@ -2,11 +2,12 @@
   "name": "ecommerce-frontend",
   "version": "0.1.0",
   "private": true,
+  "type": "commonjs",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -60,60 +61,22 @@
     "typescript": "^5"
   },
   "keywords": [],
-  "husky": null,
-  "bin": null,
-  "release": null,
-  "eslintIgnore": [],
-  "dist": {},
-  "main": "",
-  "type": "commonjs",
-  "repository": null,
-  "optionalDependencies": {},
-  "typesVersions": {},
-  "stylelint": null,
-  "engines": {},
-  "bundledDependencies": null,
-  "workspaces": null,
-  "maintainers": [],
-  "jscpd": null,
-  "author": null,
-  "peerDependencies": {},
-  "module": "",
-  "cpu": [],
-  "packageManager": "",
-  "preferGlobal": false,
-  "license": null,
-  "renovate": null,
-  "jspm": null,
-  "files": [],
-  "bundleDependencies": null,
-  "esnext": null,
-  "publishConfig": {},
-  "exports": null,
-  "description": "",
-  "resolutions": {},
-  "eslintConfig": null,
-  "ava": null,
-  "bugs": null,
-  "nodemonConfig": null,
-  "jscsConfig": null,
-  "jshintConfig": null,
-  "directories": {},
-  "man": null,
-  "lint-staged": null,
-  "engineStrict": false,
-  "types": "",
-  "funding": null,
-  "os": [],
-  "browserslist": null,
-  "overrides": {},
-  "readme": "",
-  "jest": {},
-  "prettier": null,
-  "licenses": [],
-  "typings": "",
-  "peerDependenciesMeta": {},
-  "contributors": [],
-  "config": {},
-  "homepage": ""
+  "repository": {},
+  "engines": {
+    "node": ">=20.19.6",
+    "npm": ">=10.3.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "license": "UNLICENSED"
 }
