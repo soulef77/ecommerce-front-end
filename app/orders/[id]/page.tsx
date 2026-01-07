@@ -2,8 +2,8 @@
 
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/authStore';
-import { ordersApi, paymentsApi } from '@/lib/api';
+import { useAuthStore } from '../../../src/store/authStore';
+import { ordersApi, paymentsApi } from '../../../src/lib/api';
 import Link from 'next/link';
 import { CheckCircle, XCircle, Clock } from 'lucide-react';
 

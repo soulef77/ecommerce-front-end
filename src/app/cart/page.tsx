@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useCartStore } from '@/store/cartStore';
-import { useAuthStore } from '@/store/authStore';
+import { useCartStore } from '../../store/cartStore';
+import { useAuthStore } from '../../store/authStore';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';

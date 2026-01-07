@@ -1,9 +1,9 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { productsApi } from '@/lib/api';
-import { useCartStore } from '@/store/cartStore';
-import { useAuthStore } from '@/store/authStore';
+import { productsApi } from '../../../lib/api';
+import { useCartStore } from '../../../store/cartStore';
+import { useAuthStore } from '../../../store/authStore';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';

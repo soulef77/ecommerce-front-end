@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { productsApi, categoriesApi } from '@/lib/api';
+import { productsApi, categoriesApi } from '../../lib/api';
 import Link from 'next/link';
 import Image from 'next/image';
 import {Header} from '../../../components/Header';
 import {Footer} from '../../../components/Footer';
-import SearchBar from '@/components/SearchBar';
-import Filters, { FilterState } from '@/components/Filters';
+import SearchBar from "../../components/SearchBar";
+import Filters, { FilterState } from '../../components/Filters';
 
 export default function ShopPage() {
     const [searchQuery, setSearchQuery] = useState('');

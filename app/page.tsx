@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { productsApi } from '@/lib/api';
+import { productsApi } from '../src/lib/api';
 import Link from 'next/link';
 import Image from 'next/image';
 import {Header} from '../components/Header';

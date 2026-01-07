@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useCartStore } from '@/store/cartStore';
-import { useAuthStore } from '@/store/authStore';
+import { useCartStore } from '../../src/store/cartStore';
+import { useAuthStore } from '../../src/store/authStore';
 import { useRouter } from 'next/navigation';
-import { ordersApi, paymentsApi } from '@/lib/api';
+import { ordersApi, paymentsApi } from '../../src/lib/api';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
