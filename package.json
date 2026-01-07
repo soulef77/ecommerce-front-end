@@ -78,5 +78,31 @@
       "last 1 safari version"
     ]
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "eslintIgnore": [],
+  "dist": {},
+  "main": "",
+  "optionalDependencies": {},
+  "typesVersions": {},
+  "maintainers": [],
+  "peerDependencies": {},
+  "module": "",
+  "cpu": [],
+  "preferGlobal": false,
+  "files": [],
+
+  "publishConfig": {},
+  "description": "",
+  "resolutions": {},
+  "directories": {},
+  "engineStrict": false,
+  "os": [],
+  "overrides": {},
+  "jest": {},
+  "licenses": [],
+  "typings": "",
+  "peerDependenciesMeta": {},
+  "contributors": [],
+  "config": {},
+  "homepage": ""
 }
