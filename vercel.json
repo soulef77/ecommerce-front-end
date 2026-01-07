@@ -1,26 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/"
-    }
-  ],
-  "prebuild": [
-    {
-      "cmd": "npx prisma generate",
-      "use": "@vercel/static-build",
-      "allowFailure": false
-    }
-  ],
-  "installCommand": "npm install --prefer-offline",
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
-  "framework": null
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["iad1"]
 }
