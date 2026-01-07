@@ -63,7 +63,7 @@
   "keywords": [],
   "repository": {},
   "engines": {
-    "node": ">=20.19.6",
+    "node": "20.19.6",
     "npm": ">=10.3.0"
   },
   "browserslist": {
