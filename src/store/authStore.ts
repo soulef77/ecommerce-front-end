@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { authApi } from '@/lib/api';
+import { authApi } from '../lib/api';
 
 interface User {
     id: string;
@@ -32,7 +32,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     },
 
     register: async (email: string, password: string) => {
-        const data = await authApi.register(email, password).then(res => res.data);
+        const data = await authApi.register(email, password).then((res: { data: any; }) => res.data);
         set({
             user: data.user,
             token: data.access_token,

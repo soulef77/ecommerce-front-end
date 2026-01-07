@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import Stripe from 'stripe';
 
@@ -7,57 +7,44 @@ export class PaymentsService {
   private stripe: Stripe;
 
   constructor(private prisma: PrismaService) {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '',
+      {
+        apiVersion: '2025-12-15.clover',
+      });
   }
 
-
+  // ----------------------------
+  // Création d'un PaymentIntent
+  // ----------------------------
   async createPaymentIntent(orderId: string, userId: string) {
-    // Récupérer la commande
     const order = await this.prisma.order.findFirst({
-      where: {
-        id: orderId,
-        userId: userId,
-      },
-      include: {
-        items: true,
-        payment: true,
-      },
+      where: { id: orderId, userId },
+      include: { items: true, payment: true },
     });
 
-    if (!order) {
-      throw new NotFoundException('Order not found');
-    }
+    if (!order) throw new NotFoundException('Order not found');
+    if (order.status !== 'PENDING') throw new BadRequestException('Order is not pending');
 
-    if (order.status !== 'PENDING') {
-      throw new BadRequestException('Order is not pending');
-    }
-
-    // Si un paiement existe déjà, retourner le PaymentIntent existant
-    if (order.payment) {
+    // Payment existant ?
+    if (order.payment?.stripePaymentIntentId) {
       const paymentIntent = await this.stripe.paymentIntents.retrieve(
         order.payment.stripePaymentIntentId,
       );
-
       return {
         clientSecret: paymentIntent.client_secret,
         paymentIntentId: paymentIntent.id,
       };
     }
 
-    // Créer un nouveau PaymentIntent
+    // Nouveau PaymentIntent
     const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: order.totalAmount,
+      amount: Math.round(order.totalAmount * 100), // en centimes
       currency: 'eur',
-      metadata: {
-        orderId: order.id,
-        userId: userId,
-      },
-      automatic_payment_methods: {
-        enabled: true,
-      },
+      metadata: { orderId: order.id, userId },
+      automatic_payment_methods: { enabled: true },
     });
 
-    // Enregistrer le paiement en base
+    // Enregistrer le paiement
     await this.prisma.payment.create({
       data: {
         orderId: order.id,
@@ -73,30 +60,25 @@ export class PaymentsService {
     };
   }
 
+  // ----------------------------
+  // Gestion Webhook Stripe
+  // ----------------------------
   async handleWebhook(signature: string, rawBody: Buffer | undefined) {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-    if (!webhookSecret) {
-      throw new Error('Webhook secret not configured');
-    }
-
-    if (!rawBody) {  // ← Vérification ajoutée
-      throw new BadRequestException('Request body is required');
-    }
+    if (!webhookSecret) throw new Error('Webhook secret not configured');
+    if (!rawBody) throw new BadRequestException('Request body is required');
 
     let event: Stripe.Event;
-
     try {
-      event = this.stripe.webhooks.constructEvent(
-        rawBody,
-        signature,
-        webhookSecret,
-      );
-    } catch (err) {
-      throw new BadRequestException(`Webhook Error: ${err.message}`);
+      event = this.stripe.webhooks.constructEvent(rawBody as Buffer, signature, webhookSecret);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        throw new BadRequestException(`Webhook Error: ${err.message}`);
+      }
+      throw new BadRequestException('Webhook Error: Unknown error');
     }
 
-    // Gérer les différents événements
+    // Gestion des événements
     switch (event.type) {
       case 'payment_intent.succeeded':
         await this.handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent);
@@ -113,6 +95,9 @@ export class PaymentsService {
     return { received: true };
   }
 
+  // ----------------------------
+  // Payment réussi
+  // ----------------------------
   private async handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
     const payment = await this.prisma.payment.findUnique({
       where: { stripePaymentIntentId: paymentIntent.id },
@@ -124,13 +109,11 @@ export class PaymentsService {
       return;
     }
 
-    // Mettre à jour le paiement
     await this.prisma.payment.update({
       where: { id: payment.id },
       data: { status: 'SUCCEEDED' },
     });
 
-    // Mettre à jour la commande
     await this.prisma.order.update({
       where: { id: payment.orderId },
       data: { status: 'PAID' },
@@ -139,6 +122,9 @@ export class PaymentsService {
     console.log(`✅ Payment succeeded for order: ${payment.orderId}`);
   }
 
+  // ----------------------------
+  // Payment échoué
+  // ----------------------------
   private async handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
     const payment = await this.prisma.payment.findUnique({
       where: { stripePaymentIntentId: paymentIntent.id },
@@ -150,7 +136,6 @@ export class PaymentsService {
       return;
     }
 
-    // Mettre à jour le paiement
     await this.prisma.payment.update({
       where: { id: payment.id },
       data: { status: 'FAILED' },
@@ -159,24 +144,17 @@ export class PaymentsService {
     console.log(`❌ Payment failed for order: ${payment.orderId}`);
   }
 
+  // ----------------------------
+  // Vérifier le statut d’un paiement
+  // ----------------------------
   async getPaymentStatus(orderId: string, userId: string) {
     const order = await this.prisma.order.findFirst({
-      where: {
-        id: orderId,
-        userId: userId,
-      },
-      include: {
-        payment: true,
-      },
+      where: { id: orderId, userId },
+      include: { payment: true },
     });
 
-    if (!order) {
-      throw new NotFoundException('Order not found');
-    }
-
-    if (!order.payment) {
-      throw new NotFoundException('Payment not found for this order');
-    }
+    if (!order) throw new NotFoundException('Order not found');
+    if (!order.payment) throw new NotFoundException('Payment not found for this order');
 
     return {
       orderId: order.id,

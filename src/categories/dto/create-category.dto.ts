@@ -2,8 +2,8 @@ import { IsString } from 'class-validator';
 
 export class CreateCategoryDto {
   @IsString()
-  name: string;
+  name!: string;
 
   @IsString()
-  slug: string;
+  slug!: string;
 }

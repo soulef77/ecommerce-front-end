@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig, AxiosError } from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
@@ -11,17 +11,24 @@ const api = axios.create({
 
 // Intercepteur pour ajouter le token JWT
 api.interceptors.request.use(
-    (config) => {
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('token');
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
+  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
+      // Vérifie qu'on est côté navigateur
+      if (typeof window !== 'undefined') {
+          const token = localStorage.getItem('token');
+          if (token) {
+              // Assure que config.headers existe
+              config.headers = config.headers || {};
+              // Ajoute l'en-tête Authorization
+              (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
+          }
+      }
+      return config;
+  },
+  (error: AxiosError): Promise<AxiosError> => {
+      return Promise.reject(error);
+  }
 );
+
 
 // Auth
 export const authApi = {
